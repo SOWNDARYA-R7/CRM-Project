@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        input {
+            padding: 10px;
+            width: 200px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+</style>
+<body>
+    <div class="container">
+    <h1>Login Page</h1>
+    <input type="email" id="email" placeholder="Admin Email" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+
+    <button type ="button" onclick="changePassword()">Forget password</button><br><br>
+    <button onclick="validation()">Login</button>
+    <p id="result"></p>
+    </div>
+    <script>
+        let currentpassword = "Sound";
+        function validation(){
+
+            let email = document.getElementById("email").value;
+            let enteredpassword = document.getElementById("password").value;
+
+            if(email === "" || password === ""){
+                document.getElementById("result").innerHTML = "Kindly Fill the details";
+                document.getElementById("result").style.color = "red";
+                return;
+            }
+
+            if(email === "sowndaryaramraj2006@gmail.com" && enteredpassword === currentpassword ){
+                document.getElementById("result").innerHTML = "Login Successful";
+                document.getElementById("result").style.color = "green";
+            window.location.href = 'home.html';
+            }
+
+            else{
+                document.getElementById("result").innerHTML = "Invaild email or password";
+                document.getElementById("result").style.color = "red";
+                return;
+            }
+        }
+
+        function changePassword(){
+
+            const newPassword = prompt("Enter new Passwor");
+            const secpin = prompt("nter your security pin");
+            if(secpin === "2006"){
+               currentpassword = newPassword;
+               document.getElementById("result").innerHTML = "password changed successfully";
+               document.getElementById("result").style.color = "green";
+            }
+            else{
+                document.getElementById("result").innerHTML = "Security pin does match";
+                document.getElementById("result").style.color = "red";
+
+                return;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+ body{
+        font-family: Arial,sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: rgb(243, 246, 248);
+    }
+    .container{
+        text-align: center;
+        background-color: white;
+        padding: 30px;
+        box-shadow: 0px 5px 10px grey;
+        border-radius: 15px;
+    }
+    button{
+        background-color: rgb(26, 145, 26);
+        height:30px;
+        border-radius: 7px;
+        border: none;
+        color: white;
+        padding :10px 20px;
+        
+    }
+
+   button:hover{
+    background-color: rgb(48, 238, 48);
+    border-radius: 50px;
+   }
+   #result{
+    margin-top: 20px;
+    font-size: 18px;
+   }
+   </style>
+<body>
+    <div class="container">
+     <h1>Contact Form</h1>
+    <p>Fill out the form to add a new contact.</p>
+    <table>
+        <tr>
+            <td>Customer ID:</td>
+            <td><input type="text" id="customerId" required></td>
+        </tr>
+        <tr>
+            <td>Contact ID:</td>
+            <td><input type="text" id="contactId" required></td>
+        </tr>
+        <tr>
+            <td>Name:</td>
+            <td><input type="text" id="name" required></td>
+        </tr>
+        <tr>
+            <td>Email:</td>
+            <td><input type="email" id="email" required></td>
+        </tr>
+        
+    </table><br>
+    <button onclick="addContacts()">Add Contact</button><br><br>
+    <button onclick="window.location.href='./home.html'">Back</button>
+    <p id = "result"></p>
+    </div>
+    <script>
+        async function addContacts(){
+            const customerId = Number(document.getElementById("customerId").value);
+            const contactId = Number(document.getElementById("contactId").value);
+            const name = document.getElementById("name").value; 
+            const email = document.getElementById("email").value;
+           
+            const response = await fetch("http://localhost:5000/addContact",{
+                method: "POST",
+                headers:{
+                    "Content-Type" : "application/json"
+                },
+                body:JSON.stringify({customerId,contactId, name, email})
+            })
+            const data = await response.json();
+             document.getElementById("result").innerHTML = data.message;
+             const result = document.getElementById("result");
+             result.style.color = data.message === "Contact added successfully" ? "green" : "red";
+        }
+        </script>
+</body>
+</html>
