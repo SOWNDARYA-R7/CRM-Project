@@ -40,6 +40,11 @@
     margin-top: 20px;
     font-size: 18px;
    }
+   span[id$="Error"]{
+       color: red;
+       font-size: 12px;
+       text-align: left;
+   }
    </style>
 <body>
     <div class="container">
@@ -48,19 +53,32 @@
     <table>
         <tr>
             <td>Customer ID:</td>
-            <td><input type="text" id="customerId" required></td>
+            <td>
+                <input type="number" id="customerId" required>
+                <span id="customerIdError"></span>
+            
+            </td>
         </tr>
         <tr>
             <td>Contact ID:</td>
-            <td><input type="text" id="contactId" required></td>
+            <td>
+                <input type="number" id="contactId" required>
+                <span id="contactIdError"></span>
+            </td>
         </tr>
         <tr>
             <td>Name:</td>
-            <td><input type="text" id="name" required></td>
+            <td>
+               <input type="text" id="name" required>
+               <span id="nameError"></span>
+            </td>
         </tr>
         <tr>
             <td>Email:</td>
-            <td><input type="email" id="email" required></td>
+            <td>
+                <input type="email" id="email" required>
+                <span id="emailError"></span>
+            </td>
         </tr>
         
     </table><br>
@@ -69,7 +87,98 @@
     <p id = "result"></p>
     </div>
     <script>
+        
+        document.getElementById("name").addEventListener("input",function(){
+            const name = this.value;
+            const regex = /^[A-Za-z ]+$/;
+            if(name === ""){
+                document.getElementById("nameError").innerText = "Name is required";
+            }
+            else if(!regex.test(name)){
+                document.getElementById("nameError").innerText = "Only letters allowed";
+            }
+            else{
+                document.getElementById("nameError").innerText = "";
+            }
+        });
+
+        document.getElementById("email").addEventListener("input",function(){
+            const email = this.value;
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if(email === ""){
+                document.getElementById("emailError").innerText = "Email is required";
+            }
+            else if(!regex.test(email)){
+                document.getElementById("emailError").innerText = "Enter valid Email";
+            }
+            else{
+                document.getElementById("emailError").innerText = "";
+
+            }
+        });
+          
+        document.getElementById("contactId").addEventListener("input",function(){
+            
+            if(this.value !== "" && isNaN(this.value)){
+                document.getElementById("contactIdError").innerText = "Only numbers allowed";
+            }
+            else{
+                document.getElementById("contactIdError").innerText = "";
+
+            }
+        });
+
+        document.getElementById("customerId").addEventListener("input",function(){
+            
+            if(this.value !== "" && isNaN(this.value)){
+                document.getElementById("customerIdError").innerText = "Only numbers allowed";
+            }
+            else{
+                document.getElementById("customerIdError").innerText = "";
+
+            }
+        });
+
+
+        function ValidateForm(){
+            const customerId = document.getElementById("customerId").value;
+            const contactId = document.getElementById("contactId").value;
+            const name = document.getElementById("name").value; 
+            const email = document.getElementById("email").value;
+            const customerIdError = document.getElementById("customerIdError");
+            const contactIdError = document.getElementById("contactIdError");
+            const nameError = document.getElementById("nameError"); 
+            const emailError = document.getElementById("emailError");
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const nameRegex = /^[A-Za-z ]+$/;
+            if(customerId ===""&&
+            contactId === "" &&
+            name === ""&&
+            email ===""
+            ){
+              nameError.innerText="enter valid name";
+              emailError.innerText="enter valid email";
+              contactIdError.innerText="enter valid contactId";
+              customerIdError.innerText="enter valid customerId";
+            return false;
+            }
+            if(!nameRegex.test(name)){
+                alert("Invalid name");
+                return false;
+            }
+            if(!emailRegex.test(email)){
+                alert("Invalid email");
+                return false;
+            }
+            return true;
+
+        }
+
         async function addContacts(){
+            if(!ValidateForm()){
+                return;
+            }
+
             const customerId = Number(document.getElementById("customerId").value);
             const contactId = Number(document.getElementById("contactId").value);
             const name = document.getElementById("name").value; 
