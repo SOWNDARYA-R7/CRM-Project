@@ -115,3 +115,28 @@ Through this project, the following concepts were implemented and learned:
 * Basic Authentication Logic
 * CRM Workflow Understanding
 
+### Beginner validation(Many if-else Statements)
+this is all based in conditional statements
+i used regex for checking my requirements
+
+## the disadvantages 
+ -> less code Readability
+ -> time spent in writing each logic
+ -> difficult to add new logic
+
+## using object Based validation
+
+# it is best approach
+
+* we store the rules in validationRules object.
+* then call function validateField and loop through it
+* it will shows the error in span tag
+* for real time validation we used addEventListener.
+* validateForm function run when the button clicked to verify all fields filled or not 
+* in validateForm also we called validateField function.
+
+## Advantages
+
+* code Readability is high
+* Easy to add new field and rules
+* easy underStanding 

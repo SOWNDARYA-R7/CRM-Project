@@ -79,107 +79,80 @@
     </div>
     <script>
 
-        document.getElementById("name").addEventListener("input",function(){
-            const name = this.value;
-            const regex = /^[A-Za-z ]+$/
-            const nameError = document.getElementById("nameError");
-
-            if(name === ""){
-                 nameError.innerText = "Name is Required";
+        const validationRules ={
+            customerId:{
+                regex:/^\d+$/,
+                requiredMessage:"Customer ID is required",
+                invalidMessage:"Only digits allowed"
+            },
+            name:{
+                regex:/^[A-Za-z ]+$/,
+                requiredMessage:"Name is Required",
+                invalidMessage:"Only Letters allowed"
+            },
+            email:{
+                regex:/^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                requiredMessage:"Email is required",
+                invalidMessage:"Enter valid email"
+            },
+            password:{
+                regex:/^[A-Z](?=.*\d)(?=.*[!@#$%&*])[A-Za-z\d@#!$%&*]{7}$/,
+                requiredMessage:"Password is Required",
+                invalidMessage:"Must start with captital letter and contains number & special character 8chars needed"
             }
-            else if(!regex.test(name)){
-                 nameError.innerText = "only Letters allowed";
-            }
-            else{
-                 nameError.innerText = "";
-            }
-        });
-
-        document.getElementById("email").addEventListener("input",function(){
-            const email = this.value;
-            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-            const emailError = document.getElementById("emailError");
-
-            if(email === ""){
-                 emailError.innerText = "email is Required";
-            }
-            else if(!regex.test(email)){
-                 emailError.innerText = "Enter valid Email";
-            }
-            else{
-                 emailError.innerText = "";
-            }
-        });
+        };
         
-        document.getElementById("customerId").addEventListener("input",function(){
-            const customerId = this.value;
-            const customerIdError = document.getElementById("customerIdError");
-            if(this.value !== "" && isNaN(this.value)){
-                customerIdError.innerText = "Enter Only digits"
-            }
-            else{
-                customerIdError.innerText = ""
-            }
-        });
-
-        document.getElementById("password").addEventListener("input",function(){
-            const password = this.value;
-            const passwordError = document.getElementById("passwordError");
-             const regex = /^[A-Z](?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7}$/;
-            if(password === ""){
-                passwordError.innerText = "Enter valid password";
-            }
-            else if(!regex.test(password)){
-              passwordError.innerText = "password upto 8 char ,First captital letter, one digit,one special character";
-            }
-            else{
-                passwordError.innerText = ""
-            }
-        });
-
-        function Validate(){
-            const customerId = document.getElementById("customerId").value;
-            const name = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const customerIdError = document.getElementById("customerIdError");
-            const passwordError = document.getElementById("passwordError");
-            const nameError = document.getElementById("nameError"); 
-            const emailError = document.getElementById("emailError");
-            const nameRegex = /^[A-Za-z ]+$/
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-            const passwordRegex = /^[A-Z](?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7}$/;
-            if(customerId ===""&&
-            password === "" &&
-            name === ""&&
-            email ===""
-            ){
-              nameError.innerText="enter valid name";
-              emailError.innerText="enter valid email";
-              passwordError.innerText="enter valid contactId";
-              customerIdError.innerText="enter valid customerId";
-            return false;
-            }
-            
-            if(!nameRegex.test(name)){
-                nameError.innerText="enter valid name";
+        function validateField(value, rule, errorElement){
+             if(value.trim() === ""){
+                errorElement.innerText = rule.requiredMessage;
                 return false;
-            }
-             if(!emailRegex.test(email)){
-                emailError.innerText="enter valid email";
+             }
+             if(!rule.regex.test(value)){
+                errorElement.innerText = rule.invalidMessage;
                 return false;
-            }
-            if(!passwordRegex.test(password)){
-                passwordError.innerText="enter valid password";
-                return false;
-            }
-            return true;
-
+             }
+             errorElement.innerText="";
+             return true;
         }
+        
+for(const field in validationRules){
+
+    document
+        .getElementById(field)
+        .addEventListener("input", function(){
+
+            validateField(
+                this.value,
+                validationRules[field],
+                document.getElementById(field + "Error")
+            );
+
+        });
+}
+
+        function validateForm(){
+            let isValid = true;
+            for(const field in validationRules){
+                 const value =
+            document.getElementById(field).value;
+
+                const valid = validateField(
+                    value,
+                    validationRules[field],
+                    document.getElementById(field + "Error")
+                    );
+        if(!valid){
+           isValid = false;
+        }
+    }
+
+        return isValid;
+}
+
         async function addLeads(){
             console.log("Button Clicked");
 
-            if(!Validate()){
+            if(!validateForm()){
                 return;
             }
             const customerId = Number(document.getElementById("customerId").value);
