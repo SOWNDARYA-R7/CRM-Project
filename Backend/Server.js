@@ -1,10 +1,12 @@
+require("dotenv").config();
+
 const express = require ('express');
 const app = express();
 
 const mongoose = require('mongoose');
-const Lead = require('./models/Lead');
-const Contact = require('./models/contact');
-
+const Lead = require('../models/Lead');
+const Contact = require('../models/contact');
+const verifyToken = require("./middleware/authMiddleware");
 
 const cors = require('cors');
 app.use(cors());
@@ -20,22 +22,23 @@ app.get("/",(req,res)=>{
     res.send("Backend is running");
 });
 
-app.post("/addleads",async (req,res)=>{
-    try{
-    const { customerId, name, email, password } = req.body;     
-    
-    if(!customerId || !name || !email || !password){
-        return res.status(400).json({message:"Kindly fill all the details"});
-    }
-    
-    const existingId = await Lead.findOne({customerId});
-    if(existingId){
-        return res.status(400).json({message:"customerId already exists"});
-    }
+const { login } = require("./controllers/authController");
+app.post("/login", login)
 
+app.post("/addleads",verifyToken,async (req,res)=>{
+    try{
+    const { customerId, name, email, password } = req.body;    
+    const existingId = await Lead.findOne({customerId});
     const existingemail = await Lead.findOne({email});
+    const error = {};
+    if(existingId){
+        error.customerId = ("CustomerId alread exist");
+    }
     if(existingemail){
-        return res.status(400).json({message:"Email already exists"});
+          error.email = ("Enter Valid email");
+    }
+    if(Object.keys(error).length > 0){
+     return res.status(400).json({errors:error})
     }
     await Lead.create(req.body);
     res.status(201).json({message:"Lead added successfully"});
@@ -46,50 +49,56 @@ app.post("/addleads",async (req,res)=>{
     }
 });
 
-app.get('/leads',async (req,res)=>{
+app.get('/leads',verifyToken,async (req,res)=>{
     const Leads = await Lead.find();
     res.json({message:"All Leads as been Displayed Successfully", leads: Leads});
 });
 
-app.get('/getContacts',async (req,res)=>{
+app.get('/getContacts',verifyToken,async (req,res)=>{
     const contacts = await Contact.find();
     res.json({message:"All Contacts as been Displayed Successfully", contacts: contacts});
 });
 
-app.delete('/deleteLead/:customerId', async (req, res) => {
-
+app.delete('/deleteLead/:customerId', verifyToken,async (req, res) => {
+try{
     const customerId = Number(req.params.customerId);
     const deletedLead = await Lead.findOneAndDelete({ customerId });
     console.log("Deleted Lead:", deletedLead);
     res.json({
         message: deletedLead ? "Lead Deleted Successfully" : "Lead not found"
     });
+}
+catch(err){
+    console.log(err);
+    res.status(500).json({message:"Server Error"});
+}
 
 });
 
-app.post('/addContact',async(req,res)=>{
+app.post('/addContact',verifyToken,async(req,res)=>{
     try{
         console.log(req.body);
         const {customerId, contactId, name, email} = req.body;
-        if(!customerId || !contactId || !name || !email){
-            console.log("test1");
-            return res.status(400).json({message:"Kindly Fill All Details"});
-        }
         const existingId = await Contact.findOne({ customerId });
-        if(existingId){
-            console.log("test2");
-            return res.status(400).json({message:"CustomerId already exists"});
-        }
-        const existiD = await Contact.findOne({contactId});
-        if(existiD){
-            console.log("test3");
-            return res.status(400).json({message:"ContactId already exist"});
-        }
-        const existemail = await Contact.findOne({email});
-        if(existemail){
-            console.log("test4");
-            return res.status(400).json({message:"Email already exists"});
-        }
+const existiD = await Contact.findOne({ contactId });
+const existemail = await Contact.findOne({ email });
+        const errors = {};
+
+if(existingId){
+    errors.customerId = ("CustomerId already exists");
+}
+
+if(existiD){
+    errors.contactId = ("ContactId already exists");
+}
+
+if(existemail){
+    errors.email = ("Email already exists");
+}
+
+if(Object.keys(errors).length > 0){
+    return res.status(400).json({ errors });
+}
 
         const contact = await Contact.create({customerId, contactId, name, email});
         console.log(contact);
@@ -100,6 +109,7 @@ app.post('/addContact',async(req,res)=>{
         res.status(500).json({message:"Server Error "});
     }
 })
+
 app.listen(5000,()=>{
     console.log("Server running in port 5000");
 });
